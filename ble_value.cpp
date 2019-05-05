@@ -1,4 +1,18 @@
-// Copyright (c) 2019 Zeyad Tamimi.  All rights reserved.
+/**
+ * @file   ble_value.cpp
+ *
+ * @brief  An abstraction layer over a variable data type Bluetooth Low Energy class.
+ * @date   03/04/2019
+ * @author Zeyad Tamimi (ZeyadTamimi@Outlook.com)
+ * @copyright Copyright (c) 2019 Zeyad Tamimi. All rights reserved.
+ *            This Source Code Form is subject to the terms of the Mozilla Public
+ *            License, v. 2.0. If a copy of the MPL was not distributed with this
+ *            file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ * @TODO Handle pointers
+ * @TODO Handle Arrays
+ * @TODO Don't assume system endianess
+ * @TODO Max BLE stack size
+ */
 
 #include <cstdint>
 #include <vector>
@@ -6,6 +20,8 @@
 
 #include "ble_value.hpp"
 
+namespace BLE
+{
 
 std::vector<uint8_t>
 BLE_Value::to_raw(void) const
@@ -96,3 +112,5 @@ BLE_Value::transaction_write_abort(uint16_t connection_id)
 
     m_transactions_write.erase(connection_id);
 }
+
+};

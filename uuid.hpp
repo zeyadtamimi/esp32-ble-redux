@@ -1,19 +1,30 @@
-// Copyright (c) 2019 Zeyad Tamimi.  All rights reserved.
+/**
+ * @file   uuid.hpp
+ *
+ * @brief  128-bit UUID wrapper class and utilities.
+ * @date   03/04/2019
+ * @author Zeyad Tamimi (ZeyadTamimi@Outlook.com)
+ * @copyright Copyright (c) 2019 Zeyad Tamimi. All rights reserved.
+ *            This Source Code Form is subject to the terms of the Mozilla Public
+ *            License, v. 2.0. If a copy of the MPL was not distributed with this
+ *            file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ */
 
-#ifndef UUID_HPP
-#define UUID_HPP
+#ifndef COMPONENTS_BLE_UUID_HPP
+#define COMPONENTS_BLE_UUID_HPP
 
 #include <array>
 #include <cstdint>
 #include <string>
-#include <string>
 #include <variant>
 
+#include "absl/hash/hash.h"
 #include "esp_gatts_api.h"
 
 #include "types.hpp"
-#include "absl/hash/hash.h"
 
+namespace BLE
+{
 
 class UUID
 {
@@ -43,20 +54,25 @@ private:
     std::variant<uint16_t, uint32_t, uint128_t> m_uuid;
 };
 
-namespace std {
+
+inline bool operator==(const UUID& lhs, const UUID& rhs){ return rhs.to_128() == lhs.to_128(); }
+
+};
+
+
+namespace std
+{
 
   template <>
-  struct hash<UUID>
+  struct hash<BLE::UUID>
   {
-    std::size_t operator()(const UUID& k) const
+    std::size_t operator()(const BLE::UUID& k) const
     {
         return absl::Hash<uint128_t>()(k.to_128());
     }
   };
 
-}
+};
 
+#endif // COMPONENTS_BLE_UUID_HPP
 
-inline bool operator==(const UUID& lhs, const UUID& rhs){ return rhs.to_128() == lhs.to_128(); }
-
-#endif // UUID_HPP

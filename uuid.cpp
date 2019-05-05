@@ -1,23 +1,36 @@
-// Copyright (c) 2019 Zeyad Tamimi.  All rights reserved.
+/**
+ * @file   uuid.cpp
+ *
+ * @brief  128-bit UUID wrapper class and utilities.
+ * @date   03/04/2019
+ * @author Zeyad Tamimi (ZeyadTamimi@Outlook.com)
+ * @copyright Copyright (c) 2019 Zeyad Tamimi. All rights reserved.
+ *            This Source Code Form is subject to the terms of the Mozilla Public
+ *            License, v. 2.0. If a copy of the MPL was not distributed with this
+ *            file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ */
 
+#include <algorithm>
 #include <cstdint>
-#include <cstring>
+#include <cwchar>
+#include <iomanip>
+#include <sstream>
+#include <string>
 #include <variant>
+
 #include "types.hpp"
 #include "uuid.hpp"
-#include "esp_log.h"
-#include <string>
-#include <sstream>
-#include <iomanip>
-#include <algorithm>
+
+namespace BLE
+{
 
 constexpr const uint128_t BLE_BASE_UUID = absl::MakeUint128(0x1000, 0x800000805F9B34FB);
+
 
 UUID::UUID(const uint8_t* raw_uuid, size_t size)
 {
     // TODO Size check!
     // TODO Allow for other variants
-    // TODO Remove ASS SLN
     uint128_t uuid = 0;
     for (int i = size - 1; i > 0; i--)
     {
@@ -30,11 +43,10 @@ UUID::UUID(const uint8_t* raw_uuid, size_t size)
     m_uuid = uuid;
 }
 
-uint128_t
-UUID::to_128(void)
-const
-{
 
+uint128_t
+UUID::to_128(void) const
+{
     uint128_t uuid;
     if (std::holds_alternative<uint16_t>(m_uuid))
     {
@@ -54,6 +66,7 @@ const
     return uuid;
 }
 
+
 std::array<uint8_t, 16>
 UUID::to_raw_128(void) const
 {
@@ -61,6 +74,7 @@ UUID::to_raw_128(void) const
     uint128_t uuid = to_128();
 
     // We have to be careful and match the expected endian-ness
+    // TODO Use std::reverse_copy
     std::array<uint8_t, 16> ret;
     for (int i = 0; i < 16; i++)
         ret[i] = (unsigned char) ((uuid >> (i*8)) & 0xFF);
@@ -68,10 +82,10 @@ UUID::to_raw_128(void) const
     return ret;
 }
 
+
 esp_bt_uuid_t
 UUID::to_esp_uuid(void) const
 {
-    // TODO Make work with all other types of UUIDS
     auto uuid_raw_128 = to_raw_128();
 
     esp_bt_uuid_t esp_uuid;
@@ -80,6 +94,7 @@ UUID::to_esp_uuid(void) const
 
     return esp_uuid;
 }
+
 
 std::string
 UUID::to_string(void) const
@@ -122,9 +137,12 @@ UUID::operator=(const UUID& other)
     return *this;
 }
 
+
 bool
 UUID::operator==(const UUID& other)
 {
-    //return this->m_uuid == other.to_128();
     return this->m_uuid == other.m_uuid;
 }
+
+};
+
